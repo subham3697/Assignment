@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post</title>
+    <style>
+        /* General blog styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .blog-post {
+            background-color: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-post h2 {
+            color: #333;
+        }
+
+        .blog-post p {
+            color: #555;
+        }
+
+        /* Comments section */
+        .comments-section {
+            margin: 20px auto;
+            width: 80%;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .comments-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 24px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        .comment {
+            border-bottom: 1px solid #e1e1e1;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+
+        .comment h4 {
+            color: #007BFF;
+            margin-bottom: 5px;
+        }
+
+        .comment p {
+            color: #555;
+            font-size: 16px;
+        }
+
+        .no-comment h4 {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Add new comment section */
+        .add-comment {
+            margin-top: 30px;
+        }
+
+        .add-comment h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .add-comment textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .add-comment button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-comment button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    {% include 'blog/header.html' %}
+    <div class="blog-post">
+        <h2>{{blog_details.title}}</h2>
+        <p>{{blog_details.created_on | date}}</p>
+        <hr>
+        <p>{{blog_details.description}}</p>
+    </div>
+
+    <div class="comments-section">
+        <h3>Comments</h3>
+
+        {% if blog_comments %}
+            {% for i in blog_comments %}
+                <div class="comment">
+                    <h4>{{i.created_by.first_name}}</h4>
+                    <p>{{i.comment}}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="comment no-comment">
+                <h4>No comments added yet</h4>
+            </div>
+        {% endif %}
+
+        <!-- Add New Comment -->
+        <div class="add-comment">
+            <h3>Add a Comment</h3>
+            <form action="{% url 'blog:add_comment' blog_details.id %}" method="POST">
+                {% csrf_token %}
+                <textarea name="comment" rows="4" placeholder="Your Comment" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
