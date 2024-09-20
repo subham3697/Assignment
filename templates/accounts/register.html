@@ -1,0 +1,62 @@
+{% load static %}
+{% include 'accounts/header.html' %}
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-6 col-md-6 d-none d-md-block image-container"></div>
+
+			<div class="col-lg-6 col-md-6 form-container">
+				<div class="col-lg-8 col-md-12 col-sm-9 col-xs-12 form-box text-center">
+					
+					<div class="heading mb-4">
+						<h4>Create an account</h4>
+					</div>
+					{% if messages %}
+						<div class="messages">
+							{% for message in messages %}
+								<div class="alert danger">
+									{{ message }}
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+					<form method="post" action="{% url 'accounts:web_signup' %}">
+						{% csrf_token %}
+						<div class="form-input">
+							<span><i class="fa fa-user"></i></span>
+							<input type="text" name="first_name" value="{% if first_name %} {{first_name}} {% endif %}"  placeholder="First Name" >
+						</div>
+						<div class="form-input">
+							<span><i class="fa fa-user"></i></span>
+							<input type="text" placeholder="Last Name" name="last_name" value="{% if last_name %} {{last_name}} {% endif %}">
+						</div>
+						<div class="form-input">
+							<span><i class="fa fa-envelope"></i></span>
+							<input type="email" placeholder="Email Address" name="email" value="{% if email %} {{email}} {% endif %}">
+						</div>
+						<div class="form-input">
+							<span><i class="fa fa-lock"></i></span>
+							<input type="password" placeholder="Password" name="password" >
+						</div>
+						<div class="row mb-3">
+							<div class="col-12 d-flex">
+								<div class="custom-control custom-checkbox">
+									<input type="checkbox" class="custom-control-input" id="cb1">
+									<label class="custom-control-label text-white" for="cb1">I agree all terms & conditions</label>
+								</div>
+							</div>
+						</div>
+						<div class="text-left mb-3">
+							<button type="submit" class="btn">Register</button>
+						</div>
+						
+						<div style="color: #777">Already have an account
+							<a href="{% url 'accounts:web_login' %}" class="login-link">Login here</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Make sure to include jQuery for AJAX handling -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    {% include 'blog/header.html' %}
+    {% if messages %}
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+    {% endif %}
+    <div class="blog-list">
+        {% if blog_list %}
+            {% for blog in blog_list %}
+                <div class="blog-item">
+                    <h2><a href="{% url 'blog:blog_detail' blog.id %}">{{ blog.title }}</a></h2>
+                    <p>Date: {{ blog.created_on|date:"d M Y" }}</p>
+                    <p>{{ blog.description }}</p>
+   
+
+                    <button class="like-btn" data-id="{{ blog.id }}">
+                        {% if user in blog.likes.all %}
+                            <i class="fas fa-thumbs-up"></i>  (<span class="like-count">{{ blog.total_likes }}</span>)
+                        {% else %}
+                            <i class="far fa-thumbs-up"></i>  (<span class="like-count">{{ blog.total_likes }}</span>)
+                        {% endif %}
+                    </button>
+                    
+                    <form action="{% url 'blog:share_blog' %}" method="POST">
+                        {% csrf_token %}
+                        <input name="blog_id" value="{{blog.id}}" hidden >
+                        <button  class="like-btn" style="margin-top:2px "  data-url="{% url 'blog:blog_detail' blog.id %}" data-title="{{ blog.title }}">
+                            <i class="fas fa-envelope"></i> Share
+                        </button>
+                    </form>
+                    
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No blogs found.</p>
+        {% endif %}
+    </div>
+    
+
+    <!-- Pagination Links -->
+    <div class="pagination-container">
+        <div class="pagination">
+            {% if blog_list.has_previous %}
+                <a class="first" href="?page=1&q={{ query }}">&laquo; First</a>
+                <a class="previous" href="?page={{ blog_list.previous_page_number }}&q={{ query }}">Previous</a>
+            {% endif %}
+            
+            <span class="current">Page {{ blog_list.number }} of {{ blog_list.paginator.num_pages }}</span>
+            
+            {% if blog_list.has_next %}
+                <a class="next" href="?page={{ blog_list.next_page_number }}&q={{ query }}">Next</a>
+                <a class="last" href="?page={{ blog_list.paginator.num_pages }}&q={{ query }}">Last &raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+    
+
+    <!-- AJAX script to handle like/unlike -->
+    <script>
+        $(document).ready(function() {
+            $('.like-btn').click(function() {
+                var blogId = $(this).data('id');
+                var btn = $(this);
+    
+                $.ajax({
+                    url: "{% url 'blog:like_blog' %}",
+                    method: "POST",
+                    data: {
+                        'blog_id': blogId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        // Update button content based on the response (liked or not)
+                        if (response.liked) {
+                            btn.html('<i class="fas fa-thumbs-up"></i>  (' + response.total_likes + ')');
+                        } else {
+                            btn.html('<i class="far fa-thumbs-up"></i>  (' + response.total_likes + ')');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Error occurred: ' + error);
+                    }
+                });
+            });
+        });
+        
+    </script>
+    
+</body>
+</html>
